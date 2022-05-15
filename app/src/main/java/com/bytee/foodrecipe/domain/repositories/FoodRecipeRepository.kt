@@ -2,7 +2,6 @@ package com.bytee.foodrecipe.domain.repositories
 
 import com.bytee.foodrecipe.data.api.ApiClient
 import com.bytee.foodrecipe.data.api.ApiEndPoints
-import com.bytee.foodrecipe.data.utils.BaseNetworkUtils
 import com.bytee.foodrecipe.domain.model.FoodRecipe
 import com.bytee.foodrecipe.domain.model.FoodRecipeRequest
 import io.ktor.client.request.*

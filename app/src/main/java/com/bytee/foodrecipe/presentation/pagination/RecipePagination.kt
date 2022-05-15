@@ -8,7 +8,7 @@ import com.bytee.foodrecipe.domain.model.Result
 import com.bytee.foodrecipe.domain.repositories.FoodRecipeRepository
 import io.ktor.utils.io.errors.*
 
-class RecipePagination(val repository: FoodRecipeRepository) : PagingSource<Int, Result>() {
+class RecipePagination(val repository: FoodRecipeRepository, val q: String) : PagingSource<Int, Result>() {
 
     override fun getRefreshKey(state: PagingState<Int, Result>): Int? {
         return state.anchorPosition
@@ -19,7 +19,7 @@ class RecipePagination(val repository: FoodRecipeRepository) : PagingSource<Int,
         return try {
             val nextPage = params.key ?: 1
             val userList =
-                repository.getAllRecipe(FoodRecipeRequest(size = nextPage + 20, from = nextPage, q = ""))
+                repository.getAllRecipe(FoodRecipeRequest(size = nextPage + 20, from = nextPage, q = q))
             LoadResult.Page(
                 data = userList.results!!,
                 prevKey = if (nextPage == 1) null else nextPage - 1,

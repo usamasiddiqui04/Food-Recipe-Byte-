@@ -109,17 +109,26 @@ fun RecipeUiScreen(
 
     val apiState by viewModel.recipeApiState.collectAsState()
 
-    val userListItems: LazyPagingItems<Result> = viewModel.user.collectAsLazyPagingItems()
+    var search by remember {
+        mutableStateOf(false)
+    }
 
+    val userListItems: LazyPagingItems<Result>
 
     var searchValue by rememberSaveable {
         mutableStateOf("")
     }
+
+
+    userListItems = if (search) {
+        viewModel.user(searchValue).collectAsLazyPagingItems()
+    } else {
+        viewModel.user("").collectAsLazyPagingItems()
+    }
+
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
 
         val (listview, searchView, button) = createRefs()
-
-
 
         Text(
             modifier = Modifier
@@ -127,7 +136,7 @@ fun RecipeUiScreen(
                     top.linkTo(parent.top)
                 }
                 .wrapContentHeight()
-                .padding(10.dp),
+                .padding(20.dp),
             fontSize = 24.sp,
             text = "Find your delicious recipes here",
             textAlign = TextAlign.Start,
@@ -137,84 +146,51 @@ fun RecipeUiScreen(
             fontWeight = FontWeight.Bold,
         )
 
-        ExtendedFloatingActionButton(
+        OutlinedTextField(
             modifier = Modifier
                 .constrainAs(button) {
                     top.linkTo(searchView.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
-                .padding(10.dp),
-            icon = { Icon(Icons.Filled.Search, "") },
-            text = { Text("Search here...") },
-            onClick = { /*do something*/ },
-            elevation = FloatingActionButtonDefaults.elevation(8.dp)
-        )
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(start = 20.dp, end = 20.dp)
 
-//        OutlinedTextField(
-//            modifier = Modifier
-//                .constrainAs(searchView) {
-//                    top.linkTo(parent.top, 20.dp)
-//                }
-//                .fillMaxWidth()
-//                .wrapContentHeight()
-//                .padding(start = 20.dp, end = 20.dp)
-//                .border(
-//                    width = 1.dp,
-//                    color = Color.Gray,
-//                    shape = RoundedCornerShape(5.dp)
-//                )
-//                .background(Color(0xfff5f5f5)),
-//
-//            value = searchValue,
-//            onValueChange = {
-//                searchValue = it
-//            },
-//            singleLine = true,
-//            maxLines = 1,
-//            trailingIcon = {
-//                IconButton(
-//                    onClick = {
-//
-//                    }) {
-//                    Icon(Icons.Filled.Search, contentDescription = "null", tint = Color.Blue)
-//
-//
-//                }
-//            },
-//            placeholder = {
-//                Text(
-//                    modifier = Modifier.wrapContentHeight(),
-//                    fontSize = 12.sp,
-//                    text = "Search food or, ingredients...",
-//                    style = MaterialTheme.typography.body1,
-//                    color = Color.Gray,
-//                    fontWeight = FontWeight.Medium,
-//                )
-//            }
-//        )
+                .background(Color(0xfff5f5f5))
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(5.dp)
+                ),
 
+            value = searchValue,
+            onValueChange = {
 
-        if (apiState.loading) {
-            Box(modifier = Modifier.fillMaxSize()) {
-
-                Dialog(
-                    onDismissRequest = { },
-                    DialogProperties(
-                        dismissOnBackPress = false,
-                        dismissOnClickOutside = false,
-                        usePlatformDefaultWidth = false
-                    )
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(alignment = Alignment.Center),
-                        color = Color.Black
-                    )
+                searchValue = it
+                search = false
+            },
+            singleLine = true,
+            maxLines = 1,
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        search = true
+                    }) {
+                    Icon(Icons.Filled.Search, contentDescription = "null", tint = Color.Blue)
                 }
-
+            },
+            placeholder = {
+                Text(
+                    modifier = Modifier.wrapContentHeight(),
+                    fontSize = 14.sp,
+                    text = "Search food or, ingredients...",
+                    style = MaterialTheme.typography.body1,
+                    color = Color.Gray,
+                    fontWeight = FontWeight.Medium,
+                )
             }
-        }
-
+        )
 
         LazyColumn(
             modifier = Modifier
@@ -222,14 +198,14 @@ fun RecipeUiScreen(
                 .constrainAs(listview) {
                     top.linkTo(button.bottom, 5.dp)
                 }
-                .padding(bottom = 100.dp),
+                .padding(bottom = 200.dp),
             contentPadding = PaddingValues(10.dp)
         ) {
             items(userListItems) { item ->
                 RecipeList(result = item!!, onItemClick = onItemClick, onPlayVideo)
             }
 
-            if (userListItems.itemCount > 0 || userListItems.itemCount.div(21) == 0) {
+            if (userListItems.itemCount > 0) {
                 viewModel.recipeApiState.value = UiState(false)
             }
 
@@ -240,7 +216,7 @@ fun RecipeUiScreen(
                         viewModel.recipeApiState.value = UiState(true)
                     }
                     loadState.append is LoadState.Loading -> {
-                        viewModel.recipeApiState.value = UiState(true)
+//                        viewModel.recipeApiState.value = UiState(true)
                         //You can add modifier to manage load state when next response page is loading
                     }
                     loadState.append is LoadState.Error -> {
@@ -249,6 +225,21 @@ fun RecipeUiScreen(
                 }
             }
         }
+
+
+        if (apiState.loading) {
+            Box(modifier = Modifier.fillMaxSize()) {
+
+
+                CircularProgressIndicator(
+                    modifier = Modifier.align(alignment = Alignment.Center),
+                    color = Color.Black
+                )
+
+            }
+        }
+
+
     }
 }
 

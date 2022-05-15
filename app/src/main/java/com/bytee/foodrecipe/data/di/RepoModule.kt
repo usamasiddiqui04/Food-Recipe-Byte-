@@ -1,8 +1,5 @@
 package com.bytee.foodrecipe.data.di
 
-import com.bytee.foodrecipe.data.utils.BaseNetworkUtils
-import com.bytee.foodrecipe.data.utils.NetworkUtils
-import android.content.Context
 import com.bytee.foodrecipe.data.api.ApiClient
 import com.bytee.foodrecipe.domain.repositories.FoodRecipeRepository
 import com.bytee.foodrecipe.domain.repositories.RecipeDeatilsRepository
@@ -22,9 +19,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RepoModule {
 
-    @Singleton
-    @Provides
-    fun providesNetworkUtils(@ApplicationContext context: Context) : BaseNetworkUtils = NetworkUtils(context = context)
 
     @Singleton
     @Provides

@@ -197,22 +197,13 @@ fun RecipeDetailUI(
                 end.linkTo(parent.end)
             }) {
 
-                Dialog(
-                    onDismissRequest = { },
-                    DialogProperties(
-                        dismissOnBackPress = false,
-                        dismissOnClickOutside = false,
-                        usePlatformDefaultWidth = false
-                    )
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(alignment = Alignment.Center),
-                        color = Color.Black
-                    )
-                }
+                CircularProgressIndicator(
+                    modifier = Modifier.align(alignment = Alignment.Center),
+                    color = Color.Black
+                )
 
             }
-        } else if (apiState.data != null) {
+        } else if (!apiState.loading) {
 
             LazyRow(
                 modifier = Modifier

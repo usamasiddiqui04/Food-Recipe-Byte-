@@ -24,8 +24,8 @@ class FoodRecipeViewModel @Inject constructor(
         MutableStateFlow(UiState<FoodRecipe>(loading = false, data = null, exception = null))
 
 
-    val user: Flow<PagingData<Result>> = Pager(PagingConfig(pageSize = 6)) {
-        RecipePagination(repository = repository)
+    fun user(q : String): Flow<PagingData<Result>> = Pager(PagingConfig(pageSize = 20)) {
+        RecipePagination(repository = repository , q)
     }.flow.cachedIn(viewModelScope)
 
 
